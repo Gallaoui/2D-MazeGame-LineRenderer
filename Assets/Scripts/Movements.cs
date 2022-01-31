@@ -9,6 +9,7 @@ using System.Linq;
 public class Movements : MonoBehaviour
 {
     [SerializeField] private Transform Waypoint;
+    [SerializeField] private PathTraveledDestination solution;
     private InputControls IC;
     private NavMeshAgent navMeshAgent;
     private Camera cam;
@@ -25,14 +26,14 @@ public class Movements : MonoBehaviour
     private void OnEnable()
     {
         IC.Player.Mouse.performed += DoMove;
-        //IC.Player.Solution.performed += DoSolution;
+        IC.Player.Solution.performed += DoSolution;
         IC.Enable();
     }
 
-   /* private void DoSolution(InputAction.CallbackContext obj)
+   private void DoSolution(InputAction.CallbackContext obj)
     {
-        navMeshAgent.destination = Waypoint.position;
-    }*/
+       _ = StartCoroutine(solution.TravelSolution());
+    }
 
     private void DoMove(InputAction.CallbackContext obj)
     {

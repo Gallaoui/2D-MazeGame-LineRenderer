@@ -1,29 +1,54 @@
 using UnityEngine;
+using UnityEngine.AI;
+using System.Collections.Generic;
+using System.Linq;
+using System.Collections;
 
 public class PathTraveledDestination : MonoBehaviour
 {
     [SerializeField] private GameObject Player;
-    private LineRenderer line;
+    [SerializeField] private GameObject StartPosition;
+    [SerializeField] private GameObject EndPosition;
+
+    private LineRenderer LineHistory;
+    [SerializeField] private LineRenderer LineSolution;
+    private NavMeshAgent agent;
 
     private void Awake()
     {
-        line = GetComponent<LineRenderer>();
+        LineHistory = GetComponent<LineRenderer>();
+        agent = Player.GetComponent<NavMeshAgent>();
     }
 
+    
     private void Update()
     {
-        int index = 0;
-        if(Player.GetComponent<Rigidbody>().velocity == Vector3.zero)
+        TravelHistory();       
+    }
+
+    private void TravelHistory()
+    {
+        NavMeshPath path = new NavMeshPath();
+        NavMesh.CalculatePath(agent.transform.position, StartPosition.transform.position, NavMesh.AllAreas, path);
+        LineHistory.positionCount = path.corners.Length;
+        for (int i = 0; i < path.corners.Length; i++)
         {
-            index++;
-            print(index);
+            LineHistory.SetPosition(i, path.corners[i]);
         }
-       /* while ()
+    }
+
+    public IEnumerator TravelSolution()
+    {
+        NavMeshPath path = new NavMeshPath();
+        NavMesh.CalculatePath(StartPosition.transform.position, EndPosition.transform.position, NavMesh.AllAreas, path);
+        LineSolution.positionCount = path.corners.Length;
+        for (int i = 0; i < path.corners.Length; i++)
         {
-            line.positionCount = index;
-            line.SetPosition(index, Player.transform.position);
-            index++;
-            print(index);
-        }*/
+            LineSolution.SetPosition(i, path.corners[i]);
+        }
+        print("show");
+        LineSolution.enabled = true;
+        yield return new WaitForSeconds(3f);
+        LineSolution.enabled = false;
     }
 }
